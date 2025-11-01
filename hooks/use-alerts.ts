@@ -83,6 +83,7 @@ export function useAlerts() {
         `
         )
         .eq("buildings.user_id", user.id)
+        .order("created_at", { ascending: false })
         .returns<AlertWithBuilding[]>();
 
       if (error) throw error;
