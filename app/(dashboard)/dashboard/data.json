@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "header": "Uszkodzona szyba",
+    "type": "Inne",
+    "status": "W trakcie",
+    "reviewer": "Marcin Zogrodnik",
+    "building": "Gen. Kazimierza Pułaskiego 17",
+    "created": "27 Październik 2025"
+  },
+  {
+    "id": 2,
+    "header": "Brak wody",
+    "type": "Woda",
+    "status": "Zrobione",
+    "reviewer": "Marcin Zogrodnik",
+    "building": "Gen. Kazimierza Pułaskiego 17",
+    "created": "27 Październik 2025"
+  },
+  {
+    "id": 3,
+    "header": "Executive summary",
+    "type": "Narrative",
+    "status": "Nie rozpoczęto",
+    "target": "10",
+    "limit": "13",
+    "reviewer": "Eddie Lake",
+    "building": "Gen. Kazimierza Pułaskiego 17",
+    "created": "27 Październik 2025"
+  }
+]
