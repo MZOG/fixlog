@@ -1,1 +1,18 @@
-[![wakatime](https://wakatime.com/badge/user/5399ff4b-3961-4db3-b7de-fd8966fb1e4a/project/c588e870-9149-4e08-be32-6fe704a59758.svg)](https://wakatime.com/badge/user/5399ff4b-3961-4db3-b7de-fd8966fb1e4a/project/c588e870-9149-4e08-be32-6fe704a59758)
+Prosta aplikacja do zgłaszania usterek / awarii na osiedlach.
+
+1. Zarządca dodaje budynek do panelu
+2. Generuje kod QR do wydrukowania
+3. Wydrukowany kod QR można powiesić w dowolnym miejscu w budynku, na klatce schodowej, windzie
+4. Mieszkaniec widząc usterkę skanuje kod QR, który odsyła do formularza
+5. Zarządca widzi zgłoszenie w panelu - może podjąć działania
+
+MVP:
+
+- Panel zarządcy
+- Możliwość dodawania budynków
+- Możliwość dodawania własnych numerów telefonów w celu podejmowania szybszych akcji
+- Widok zgłoszeń, edycja
+- Generowanie kodu QR dla budynku
+- Generowanie PDF z wygenerowanym QR
+- Formularz zgłoszeniowy
+- Powiadomienia e-mail dla zgłaszającego oraz zarządcy (utworzenie zgłoszenia, zmiana statusu)
