@@ -1,28 +1,18 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { useUser } from "@/hooks/use-user";
 
 export default function FeedbackForm() {
   const supabase = createClient();
-  const [user, setUser] = useState<User | null>();
+  const { user } = useUser();
   const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState(false);
-
-  // get user info
-  useEffect(() => {
-    const getSession = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-    };
-
-    getSession();
-  }, []);
 
   // handle send message
   const handleSend = async () => {

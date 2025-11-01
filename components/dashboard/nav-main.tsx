@@ -15,6 +15,7 @@ import { useAlerts } from "@/hooks/use-alerts";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
+import { useUser } from "@/hooks/use-user";
 
 export function NavMain({
   items,
@@ -26,21 +27,10 @@ export function NavMain({
   }[];
 }) {
   const { alerts } = useAlerts();
-  const [user, setUser] = useState<User | null>();
+  const { user } = useUser();
   const [buildingsCount, setBuildingsCount] = useState<number>();
 
   const supabase = createClient();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    fetchUser();
-  }, []);
 
   useEffect(() => {
     const getBuildingsForUser = async (userId: string) => {

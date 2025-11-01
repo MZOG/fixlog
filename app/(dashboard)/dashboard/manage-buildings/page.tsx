@@ -3,11 +3,11 @@
 import AddProperty from "@/components/dashboard/add-property";
 
 import { createClient } from "@/lib/supabase/client";
-import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useUser } from "@/hooks/use-user";
 
 type BuildingProps = {
   id: string;
@@ -22,16 +22,9 @@ type BuildingProps = {
 
 export default function ManageBuildingsPage() {
   const supabase = createClient();
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [buildings, setBuildings] = useState<BuildingProps[]>();
-
-  const fetchUser = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (user) setUser(user);
-  };
 
   const fetchBuildings = async (userId: string) => {
     try {
@@ -40,7 +33,8 @@ export default function ManageBuildingsPage() {
       const { data: buildings, error } = await supabase
         .from("buildings")
         .select("*")
-        .eq("user_id", userId); // <-- poprawione
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
       if (error) console.log(error);
       if (buildings) setBuildings(buildings as BuildingProps[]);
@@ -50,10 +44,6 @@ export default function ManageBuildingsPage() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
 
   useEffect(() => {
     if (user) fetchBuildings(user.id);

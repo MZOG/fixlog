@@ -41,15 +41,6 @@ const PropertySchema = z.object({
 
 type NewProperty = z.infer<typeof PropertySchema>;
 
-// type NewProperty = {
-//   user_id: string;
-//   city: string;
-//   address: string;
-//   name: string;
-//   public_id: string;
-//   qr_code_data: string;
-// };
-
 type AddPropertyProps = {
   refreshBuildings: () => Promise<void>;
 };

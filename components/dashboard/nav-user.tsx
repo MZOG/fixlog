@@ -27,32 +27,14 @@ import {
 import { signout } from "@/lib/auth-actions";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useUser } from "@/hooks/use-user";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
 
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const supabase = createClient();
+  const { user, userLoading } = useUser();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
-    };
-
-    try {
-      setLoading(true);
-      fetchUser();
-    } catch (error) {
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  if (loading || !user) {
+  if (userLoading || !user) {
     return <p className="text-sm">Loading...</p>;
   }
 
