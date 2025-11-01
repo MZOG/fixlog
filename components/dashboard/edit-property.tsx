@@ -36,7 +36,6 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
   const qrLink = `${BASE_URL}/zgloszenie/${building?.public_id}`;
   const qrContainerRef = useRef<HTMLDivElement>(null);
 
-  // 📥 Pobierz dane budynku
   const fetchBuilding = async () => {
     try {
       setLoading(true);
@@ -55,7 +54,7 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
                 id: i + 1,
                 ...c,
               }))
-            : [{ id: 1, label: "Pogotowie wodne", phone: "" }]
+            : [{ id: 1, label: "", phone: "" }]
         );
       }
     } catch (err) {
@@ -167,8 +166,6 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
       toast.error("Brak danych kodu QR dla tej nieruchomości.");
       return;
     }
-
-    console.log(building?.qr_code_data.slice(0, 50));
 
     const success = await generateQR({
       buildingName: building.name,

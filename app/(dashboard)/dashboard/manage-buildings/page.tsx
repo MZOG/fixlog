@@ -73,7 +73,7 @@ export default function ManageBuildingsPage() {
         <AddProperty refreshBuildings={() => user && fetchBuildings(user.id)} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mt-5">
+      <div className="grid grid-cols-1 gap-3 mt-5">
         {buildings &&
           buildings.map((building) => {
             return (
@@ -82,7 +82,7 @@ export default function ManageBuildingsPage() {
                 href={`/dashboard/manage-buildings/${building.public_id}`}
                 className="p-4 py-5 border rounded-md hover:bg-gray-100 cursor-pointer"
               >
-                <div className="space-y-4">
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 items-center gap-5">
                   <div>
                     <Label className="font-normal">Miasto:</Label>
                     <p className="text-sm font-medium">{building.city}</p>
@@ -91,16 +91,6 @@ export default function ManageBuildingsPage() {
                   <div>
                     <Label className="font-normal">Adres:</Label>
                     <p className="text-sm font-medium">{building.address}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm font-medium"></p>
-                    <Badge
-                      variant="outline"
-                      className="text-muted-foreground px-1.5"
-                    >
-                      {building.name}
-                    </Badge>
                   </div>
 
                   <div>
