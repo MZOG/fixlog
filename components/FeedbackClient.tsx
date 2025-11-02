@@ -23,16 +23,40 @@ export default function FeedbackForm() {
 
     try {
       setLoading(true);
-      const { error } = await supabase
-        .from("feedback")
-        .insert([{ full_name: user?.user_metadata.full_name, message }]);
+      const { error } = await supabase.from("feedback").insert([
+        {
+          full_name: user?.user_metadata.full_name,
+          message,
+          email: user?.email,
+        },
+      ]);
 
       if (error) {
         toast.error("Wystąpił błąd podczas dodawania opinii");
       } else {
         toast.success("Dziękujemy za opinię");
-        // reset textarea
         setMessage("");
+
+        // handle e-mail to user with thanks
+        await fetch("/api/send-email-feedback-thanks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: user?.email,
+            subject: `Dziękujemy za przesłanie opinii`,
+          }),
+        });
+
+        // handle e-mail to superadmin (me)
+        await fetch("/api/send-email-feedback-admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            to: user?.email, // adres e-mail admin, create .env
+            subject: `Dziękujemy za przesłanie opinii`,
+            message: message,
+          }),
+        });
       }
     } catch (error) {
       console.error(error);

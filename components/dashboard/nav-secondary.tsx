@@ -20,6 +20,7 @@ export function NavSecondary({
     title: string;
     url: string;
     icon: Icon;
+    isAdmin?: boolean;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
@@ -27,7 +28,10 @@ export function NavSecondary({
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem key="feedback" className="mb-10">
-            <SidebarMenuButton asChild className="border border-gray-200">
+            <SidebarMenuButton
+              asChild
+              className="bg-linear-to-r from-teal-100 to-transparent hover:from-teal-200 hover:to-teal-50"
+            >
               <Link href="/dashboard/feedback">
                 <IconMessage />
                 <span className="font-medium">Podziel się opinią</span>

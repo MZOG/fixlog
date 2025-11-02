@@ -199,7 +199,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                   onChange={handleChange}
                   className={cn(
                     errors.city && "border-red-500 focus-visible:ring-red-500",
-                    "h-13"
+                    "max-sm:h-13"
                   )}
                 />
                 {errors.city && (
@@ -216,7 +216,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                   className={cn(
                     errors.address &&
                       "border-red-500 focus-visible:ring-red-500",
-                    "h-13"
+                    "max-sm:h-13"
                   )}
                 />
                 {errors.address && (
@@ -232,7 +232,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                   onChange={handleChange}
                   className={cn(
                     errors.name && "border-red-500 focus-visible:ring-red-500",
-                    "h-13"
+                    "max-sm:h-13"
                   )}
                 />
                 {errors.name && (
@@ -249,7 +249,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                   className={cn(
                     errors.contact_name &&
                       "border-red-500 focus-visible:ring-red-500",
-                    "h-13"
+                    "max-sm:h-13"
                   )}
                 />
                 {errors.contact_name && (
@@ -268,7 +268,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                   className={cn(
                     errors.contact_email &&
                       "border-red-500 focus-visible:ring-red-500",
-                    "h-13"
+                    "max-sm:h-13"
                   )}
                   required
                 />
