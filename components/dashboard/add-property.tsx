@@ -103,6 +103,12 @@ export default function AddProperty({
   const handleAddProperty = async () => {
     if (!user) return;
 
+    const buildingsAfterAdd = buildings + 1;
+    const pricePerBuilding = 69; // zł
+    const total = buildingsAfterAdd * pricePerBuilding;
+
+    toast.info(`Za ${buildingsAfterAdd} nieruchomości: ${total} zł/miesiąc`);
+
     if (willExceedLimit) {
       const { data: profile } = await supabase
         .from("profiles")
