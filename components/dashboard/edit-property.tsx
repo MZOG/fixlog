@@ -9,19 +9,28 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { Separator } from "../ui/separator";
 import { generateQR } from "./pdf-generator";
+import { Plus, Trash2 } from "lucide-react";
+import { z } from "zod";
 
-type BuildingProps = {
-  id: string;
-  public_id: string;
-  user_id: string;
-  city: string;
-  address: string;
-  name: string;
-  qr_code_data: string | null;
-  contact_name: string;
-  contact_email: string;
-  contacts?: { label: string; phone: string }[];
-};
+const BuildingSchema = z.object({
+  id: z.string(),
+  public_id: z.string(),
+  user_id: z.string(),
+  city: z.string().nonempty("Miasto jest wymagane"),
+  address: z.string().nonempty("Adres jest wymagany"),
+  name: z.string(),
+  qr_code_data: z.string().optional(),
+  contact_name: z.string().nonempty("Osoba kontaktowa jest wymagana"),
+  contact_email: z.email().nonempty("Adre e-mail jest wymagany"),
+  contacts: z.array(
+    z.object({
+      label: z.string(),
+      phone: z.string(),
+    })
+  ),
+});
+
+type BuildingProps = z.infer<typeof BuildingSchema>;
 
 export default function EditPropertyClient({ slug }: { slug: string }) {
   const [building, setBuilding] = useState<BuildingProps | null>(null);
@@ -30,6 +39,7 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
   >([]);
   const [loading, setLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const supabase = createClient();
 
   const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -98,12 +108,29 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
 
     const updatedData = {
       ...building,
-      contacts: contacts.map(({ id, ...rest }) => rest), // usuń lokalne id
+      contacts: contacts.map(({ id, ...rest }) => rest),
     };
+
+    const validation = BuildingSchema.safeParse(updatedData);
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      validation.error.issues.forEach((issue) => {
+        const fieldName = issue.path[0] as string;
+        fieldErrors[fieldName] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+      toast.error("Uzupełnij poprawnie wszystkie wymagane pola.");
+      return;
+    }
+
+    setErrors({});
 
     const { error } = await supabase
       .from("buildings")
-      .update(updatedData)
+      .update(validation.data)
       .eq("public_id", slug);
 
     if (error) {
@@ -111,7 +138,7 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
       toast.error("Błąd aktualizacji danych.");
     } else {
       toast.success("Dane zostały zaktualizowane!");
-      fetchBuilding(); // odśwież dane po zapisie
+      fetchBuilding();
     }
   };
 
@@ -199,6 +226,9 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
               value={building.city || ""}
               onChange={handleChange}
             />
+            {errors.city && (
+              <p className="text-sm text-red-500">{errors.city}</p>
+            )}
           </Field>
 
           <Field>
@@ -209,6 +239,9 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
               value={building.address || ""}
               onChange={handleChange}
             />
+            {errors.address && (
+              <p className="text-sm text-red-500">{errors.address}</p>
+            )}
           </Field>
 
           <Field>
@@ -229,6 +262,9 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
               value={building.contact_name || ""}
               onChange={handleChange}
             />
+            {errors.contact_name && (
+              <p className="text-sm text-red-500">{errors.contact_name}</p>
+            )}
           </Field>
 
           <Field>
@@ -241,6 +277,9 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
               value={building.contact_email || ""}
               onChange={handleChange}
             />
+            {errors.contact_email && (
+              <p className="text-sm text-red-500">{errors.contact_email}</p>
+            )}
           </Field>
 
           <Field className="self-start">
@@ -280,9 +319,15 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
         <Separator className="my-6" />
 
         <FieldGroup>
-          <h3 className="text-lg font-medium mb-2">Dodatkowe kontakty</h3>
+          <h3 className="text-lg font-medium">Dodatkowe kontakty</h3>
+          <div className="text-muted-foreground text-sm mb-2">
+            <p>
+              W tym miejscu możesz dodać kontakty w celu szybszego kontaktu.
+            </p>
+            <p>Kontakty będą widoczne w widoku zgłoszenia.</p>
+          </div>
           {contacts.map((contact) => (
-            <div key={contact.id} className="flex gap-2 items-end mb-3">
+            <div key={contact.id} className="flex gap-2 mb-3">
               <Field className="flex-1">
                 <FieldLabel>Nazwa</FieldLabel>
                 <Input
@@ -305,18 +350,19 @@ export default function EditPropertyClient({ slug }: { slug: string }) {
                 />
               </Field>
 
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => removeContact(contact.id)}
-              >
-                Usuń
-              </Button>
+              <Field className="w-10 self-end">
+                <Button
+                  variant="destructive"
+                  onClick={() => removeContact(contact.id)}
+                >
+                  <Trash2 />
+                </Button>
+              </Field>
             </div>
           ))}
 
-          <Button variant="outline" onClick={addContact}>
-            + Dodaj kontakt
+          <Button className="self-start" variant="outline" onClick={addContact}>
+            <Plus size={14} /> Dodaj kontakt
           </Button>
         </FieldGroup>
       </FieldGroup>

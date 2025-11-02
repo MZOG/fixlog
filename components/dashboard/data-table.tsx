@@ -174,8 +174,6 @@ export function DataTable({
     }
 
     toast.success("Zgłoszenie usunięte");
-
-    // usuń lokalnie z listy
   };
 
   const columns: ColumnDef<z.infer<typeof schema>>[] = [
