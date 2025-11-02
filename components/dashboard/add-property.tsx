@@ -202,7 +202,7 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
                     "h-13"
                   )}
                 />
-                {errors.name && (
+                {errors.city && (
                   <p className="text-sm text-red-500">{errors.city}</p>
                 )}
               </div>
