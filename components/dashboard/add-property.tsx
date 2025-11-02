@@ -32,10 +32,7 @@ const PropertySchema = z.object({
   address: z.string().nonempty("Adres jest wymagany."),
   name: z.string().nonempty("Nazwa inwestycji jest wymagana."),
   contact_name: z.string().nonempty("Imię i nazwisko zarządcy jest wymagane."),
-  contact_email: z
-    .string()
-    .nonempty("Adres e-mail jest wymagany.")
-    .email("Nieprawidłowy adres e-mail."),
+  contact_email: z.string().nonempty("Adres e-mail jest wymagany."),
   public_id: z.string().nonempty(),
   qr_code_data: z.string().optional(),
 });
@@ -76,12 +73,14 @@ export default function AddProperty({
 
   useEffect(() => {
     if (user) {
+      console.log(user);
+
       setNewProperty((prev) => ({
         ...prev,
         user_id: user.id,
       }));
     }
-  }, []);
+  }, [user]);
 
   const getQrCodeBase64 = (): string => {
     if (qrContainerRef.current) {
@@ -100,8 +99,6 @@ export default function AddProperty({
     }
     return "";
   };
-
-  console.log(buildings);
 
   const handleAddProperty = async () => {
     if (!user) return;
@@ -152,6 +149,7 @@ export default function AddProperty({
         const fieldName = issue.path[0] as string;
         fieldErrors[fieldName] = issue.message;
       });
+      console.log(fieldErrors);
 
       setErrors(fieldErrors);
       toast.error("Uzupełnij poprawnie wszystkie wymagane pola.");
