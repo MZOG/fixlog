@@ -52,8 +52,7 @@ export default function FeedbackForm() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            to: user?.email, // adres e-mail admin, create .env
-            subject: `Dziękujemy za przesłanie opinii`,
+            subject: `Nowa opinia!`,
             message: message,
           }),
         });

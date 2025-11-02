@@ -1,13 +1,14 @@
 import { Resend } from "resend";
 import { NextRequest, NextResponse } from "next/server";
-import { FeedbackThanksToUser } from "@/components/emails/FeedbackThanksToUser";
+import { FeedbackThanksToAdmin } from "@/components/emails/FeedbackThanksToAdmin";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
-    const { to, subject } = await req.json();
-    if (!to || !subject) {
+    const { subject, message } = await req.json();
+
+    if (!subject || !message) {
       return NextResponse.json(
         { success: false, error: "Brakuje wymaganych pól" },
         { status: 400 }
@@ -15,9 +16,9 @@ export async function POST(req: NextRequest) {
     }
     const { data, error } = await resend.emails.send({
       from: `FixLog <${process.env.EMAIL_NO_REPLY}>`,
-      to: to,
+      to: `${process.env.ADMIN_EMAIL}`,
       subject: subject,
-      react: FeedbackThanksToUser(),
+      react: FeedbackThanksToAdmin({ message }),
     });
 
     if (error) {

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { useUser } from "@/hooks/use-user";
 
-type BuildingProps = {
+export type BuildingProps = {
   id: string;
   public_id: string;
   user_id: string;
@@ -60,7 +60,10 @@ export default function ManageBuildingsPage() {
     return (
       <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
         <h1 className="text-xl font-medium">Brak nieruchomości</h1>
-        <AddProperty refreshBuildings={() => user && fetchBuildings(user.id)} />
+        <AddProperty
+          buildings={buildings?.length || 0}
+          refreshBuildings={() => user && fetchBuildings(user.id)}
+        />
       </div>
     );
   }
@@ -69,7 +72,10 @@ export default function ManageBuildingsPage() {
     <div>
       <div className="flex flex-col gap-3 md:flex-row md:justify-between md:items-center">
         <h1 className="text-xl font-medium">Zarządzaj nieruchomościami</h1>
-        <AddProperty refreshBuildings={() => user && fetchBuildings(user.id)} />
+        <AddProperty
+          buildings={buildings.length}
+          refreshBuildings={() => user && fetchBuildings(user.id)}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-3 mt-5">

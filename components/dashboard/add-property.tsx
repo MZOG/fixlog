@@ -16,12 +16,13 @@ import { PlusCircle } from "lucide-react";
 import { customAlphabet } from "nanoid";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useRef, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/hooks/use-user";
+import { BuildingProps } from "@/app/(dashboard)/dashboard/manage-buildings/page";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
@@ -43,11 +44,17 @@ type NewProperty = z.infer<typeof PropertySchema>;
 
 type AddPropertyProps = {
   refreshBuildings: () => Promise<void>;
+  buildings: number;
 };
 
-export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
+export default function AddProperty({
+  refreshBuildings,
+  buildings,
+}: AddPropertyProps) {
+  const FREE_BUILDING_LIMIT = 1;
+  const willExceedLimit = buildings + 1 > FREE_BUILDING_LIMIT;
   const nanoid = customAlphabet("1234567890abcdefghijklmx", 10);
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [open, setOpen] = useState(false);
   const [newProperty, setNewProperty] = useState<NewProperty>({
@@ -68,24 +75,16 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
   const qrLink = `${BASE_URL}/zgloszenie/${newProperty.public_id}`;
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        setUser(user);
-        setNewProperty((prev) => ({
-          ...prev,
-          user_id: user.id,
-        }));
-      }
-    };
-    fetchUser();
+    if (user) {
+      setNewProperty((prev) => ({
+        ...prev,
+        user_id: user.id,
+      }));
+    }
   }, []);
 
   const getQrCodeBase64 = (): string => {
     if (qrContainerRef.current) {
-      // 1. Znajdź element <svg> wewnątrz kontenera
       const svgElement = qrContainerRef.current.querySelector("svg");
 
       if (svgElement) {
@@ -102,7 +101,36 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
     return "";
   };
 
+  console.log(buildings);
+
   const handleAddProperty = async () => {
+    if (!user) return;
+
+    if (willExceedLimit) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("has_active_subscription")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile?.has_active_subscription) {
+        const res = await fetch("/api/stripe/create-checkout-session", {
+          method: "POST",
+          body: JSON.stringify({ userId: user.id }),
+        });
+
+        const { url } = await res.json();
+
+        if (url) {
+          window.location.href = url;
+          return;
+        } else {
+          toast.error("Nie udało się rozpocząć płatności.");
+          return;
+        }
+      }
+    }
+
     const base64Data = getQrCodeBase64();
 
     if (!base64Data) {
@@ -156,6 +184,11 @@ export default function AddProperty({ refreshBuildings }: AddPropertyProps) {
         qr_code_data: "",
       });
       setOpen(false);
+
+      await fetch("/api/stripe/update-subscription", {
+        method: "POST",
+        body: JSON.stringify({ userId: user?.id }),
+      });
       await refreshBuildings();
     }
   };
